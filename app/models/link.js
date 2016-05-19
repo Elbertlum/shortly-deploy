@@ -1,6 +1,7 @@
 var db = require('../config');
 var crypto = require('crypto');
 var mongoose = require('mongoose');
+var Promise = require('bluebird');
 
 // var Link = db.mongoose.model({
 //   tableName: 'urls',
@@ -20,11 +21,9 @@ var mongoose = require('mongoose');
 //   }
 // });
 
-
-
 var urls = new mongoose.Schema({
   id: mongoose.Schema.Types.ObjectId,
-  url: String,
+  url: {type: String, unique: true},
   baseUrl: String,
   code: String,
   title: String,
@@ -32,21 +31,49 @@ var urls = new mongoose.Schema({
   timeStamp: {type: Date, default: Date.now}
 });
 
-urls.methods.initialize = function() {
-  console.log('something');
-  this.on('creating', function(model, attrs, options) {
-    console.log('model is: ---------->>>>>> ', model);
-    var shasum = crypto.createHash('sha1');
-    shasum.update(model.get('url'));
-    model.set('code', shasum.digest('hex').slice(0, 5));
-  });
+urls.post('init', function(doc, next) {
+  // console.log('doc is', doc);
+  doc.shorten();
+  next();
+});
+
+urls.methods.shorten = function() {
+  // console.log('shortening');
+  var shasum = crypto.createHash('sha1');
+  // console.log(this.get('url'));
+  shasum.update(this.get('url'));
+  this.set('code', shasum.digest('hex').slice(0, 5));
+  console.log('hashed code', this.get('code'));
+  console.log('this', this);
 };
+
+// urls.methods.shorten = function () {
+//   var cipher = Promise.promisify(crypto.createHash);
+//   return cipher('sha1')
+//     .then(function (thing) {
+//       thing.update(this.get('url'));
+//     })
+//     .then(function (code) {
+//       this.set('code', code);
+//     });
+// };
+
+var Link = mongoose.model('Link', urls);
+
+// var hash = function(url) {
+//   var shasum = crypto.createHash('sha1');
+//   shasum.update(url);
+//   return shasum.digest('hex').slice(0, 5);
+// };
+
+// urls.post('create', function(doc) {
+//   doc.code = hash(doc.url);
+// });
+
 
 // urls.methods.remove = function() {
 
 // };
-
-var Link = mongoose.model('Link', urls);
 
 
 module.exports = Link;
