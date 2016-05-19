@@ -2,6 +2,9 @@ var path = require('path');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+
+mongoose.connect('mongodb://127.0.0.1:27017/test');
+
 // db.knex.schema.hasTable('urls').then(function(exists) {
 //   if (!exists) {
 //     db.knex.schema.createTable('urls', function (link) {
@@ -33,22 +36,9 @@ var Schema = mongoose.Schema;
 
 
 
-exports.urls = new Schema({
-  id: Schema.Types.ObjectId,
-  url: String,
-  baseUrl: String,
-  code: String,
-  title: String,
-  visits: Number,
-  timeStamp: {type: Date, default: Date.now}
-});
-
-exports.users = new Schema({
-  id: Schema.Types.ObjectId,
-  username: String,
-  password: String,
-  timeStamp: {type: Date, default: Date.now}
-});
 
 
-exports.mongoose = mongoose;
+
+
+
+module.exports = mongoose;
