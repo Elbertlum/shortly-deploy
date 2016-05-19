@@ -119,7 +119,7 @@ describe('', function() {
 
       it('Shortcode redirects to correct url', function(done) {
         var sha = link.code;
-        console.log('here is the shortcode', sha);
+        // console.log('here is the shortcode', sha);
         request(app)
           .get('/' + sha)
           .expect(302)
